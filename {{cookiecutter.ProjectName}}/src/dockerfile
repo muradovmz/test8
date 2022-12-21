@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+
+COPY *.sln .
+COPY {{cookiecutter.ProjectName}}.Api/*.csproj ./{{cookiecutter.ProjectName}}.Api/
+COPY {{cookiecutter.ProjectName}}.Domain/*.csproj ./{{cookiecutter.ProjectName}}.Domain/
+COPY {{cookiecutter.ProjectName}}.Persistence/*.csproj ./{{cookiecutter.ProjectName}}.Persistence/
+COPY {{cookiecutter.ProjectName}}.Framework/*.csproj ./{{cookiecutter.ProjectName}}.Framework/
+
+RUN dotnet restore {{cookiecutter.ProjectName}}.Api/{{cookiecutter.ProjectName}}.Api.csproj
+
+COPY {{cookiecutter.ProjectName}}.Api/. ./{{cookiecutter.ProjectName}}.Api/
+COPY {{cookiecutter.ProjectName}}.Domain/. ./{{cookiecutter.ProjectName}}.Domain/
+COPY {{cookiecutter.ProjectName}}.Persistence/. ./{{cookiecutter.ProjectName}}.Persistence/
+COPY {{cookiecutter.ProjectName}}.Framework/. ./{{cookiecutter.ProjectName}}.Framework/
+
+RUN dotnet publish {{cookiecutter.ProjectName}}.Api/{{cookiecutter.ProjectName}}.Api.csproj -c release -o /app
+
+# exporting final image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+WORKDIR /app
+COPY --from=build /app ./
+EXPOSE 5100
+ENTRYPOINT ["dotnet", "{{cookiecutter.ProjectName}}.Api.dll"]

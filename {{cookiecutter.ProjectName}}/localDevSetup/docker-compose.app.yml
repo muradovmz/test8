@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+    {{cookiecutter.ProjectName}}service:
+        container_name: {{cookiecutter.ProjectName}}service
+        tty: true
+        image: {{cookiecutter.ProjectName}}service:latest
+        build:
+            context: ../src
+            dockerfile: dockerfile
+        ports:
+            - "5100:5100"
+        environment:
+            - Spring__Cloud__Config__Uri=${Spring_Cloud_Config_Uri_VAL}
+            - Spring__Cloud__Config__Username=${Spring_Cloud_Config_Username_VAL}
+            - Spring__Cloud__Config__Password=${Spring_Cloud_Config_Password_VAL}
+            - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT_VAL}
+            - ASPNETCORE_URLS=${ASPNETCORE_URLS_VAL}
+        networks:
+            - {{cookiecutter.ProjectName}}network    
+
+
+
+
